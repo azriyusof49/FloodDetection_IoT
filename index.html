@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flood Detection IOT based n</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="card">
+        <div class="top">
+            <div class="brand">
+                <div class="logo" aria-label="Hydro Monitor logo">
+                    <!-- simple droplet logo (inline SVG, no CDN) -->
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 2s6 6.8 6 12a6 6 0 1 1-12 0c0-5.2 6-12 6-12Z" fill="rgba(15,23,42,.85)" />
+                        <path d="M12 4.6s4.6 5.4 4.6 9.4a4.6 4.6 0 1 1-9.2 0c0-4 4.6-9.4 4.6-9.4Z"
+                            fill="rgba(255,255,255,.92)" />
+                    </svg>
+                </div>
+                <div class="brandText">
+                    <h1>Flood Detection IOT based</h1>
+                    <p>Water Level • Rain Status</p>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="grid">
+            <!-- WATER PANEL -->
+            <section class="panel">
+                <div class="panelTitle">
+                    <span>RESERVOIR STATUS</span>
+                    <span class="badge warn" id="waterBadge">WARNING</span>
+                </div>
+
+                <div class="tankWrap">
+                    <div class="pctDisplay"><span id="pctText">50</span>%</div>
+                    <div id="waterBody" class="waterBody"></div>
+                </div>
+
+                <div class="waterMeta">
+                    <span>Level: <b id="cmText">42</b> cm</span>
+                    <span>Rate: <b id="rateText">+1.2</b> cm/min</span>
+                </div>
+            </section>
+
+            <!-- RAIN PANEL -->
+            <section class="panel">
+                <div class="panelTitle">
+                    <span>RAIN INDICATOR</span>
+                    <span class="badge ok" id="rainBadge">NOT RAINING</span>
+                </div>
+
+                <div class="rainRow">
+                    <div>
+                        <div class="rainBig" id="rainText">Dry</div>
+                        <div class="rainSub">
+                            <span>ADC: <b id="adcText">280</b></span>
+                            <span>Updated: <b id="timeText">—</b></span>
+                        </div>
+                    </div>
+
+                    <div class="rainIconBox notraining" id="rainBox" aria-label="Animated rain icon">
+                        <div class="ring"></div>
+                        <div class="cloud"></div>
+                        <div class="drops">
+                            <div class="drop"></div>
+                            <div class="drop"></div>
+                            <div class="drop"></div>
+                            <div class="drop"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row2">
+                    <div class="panel" style="padding:14px; border-radius:22px;">
+                        <div style="color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.6px;">HUMIDITY
+                        </div>
+                        <div class="bigNum"><span id="humText">84</span>%</div>
+                        <div class="subLine" id="humNote">High</div>
+                    </div>
+                    <div class="panel" style="padding:14px; border-radius:22px;">
+                        <div style="color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.6px;">
+                            TEMPERATURE</div>
+                        <div class="bigNum"><span id="tempText">31.2</span>°C</div>
+                        <div class="subLine">DHT11 sensor</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // ===== ThingSpeak config =====
+        const CHANNEL_ID = "3214248";
+
+        // If your channel is PRIVATE, uncomment this and fill your Read API Key:
+        // const READ_API_KEY = "PUT_YOUR_READ_API_KEY_HERE";
+
+        // ===== Global state =====
+        let state = {
+            waterPercent: 0,
+            waterCm: 0,
+            rate: 0,
+            rainADC: 0,
+            humidity: 0,
+            temp: 0,
+            updatedAt: null
+        };
+
+        function fmtTime(iso) {
+            if (!iso) return "—";
+            const d = new Date(iso);
+            return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        }
+
+        // Convert safely but DO NOT hide missing values by using old state
+        function toNumOrNull(v) {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : null;
+        }
+
+        async function loadStateFromThingSpeak() {
+            let url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=ZR5MDADJKE5IX84Q&results=2`;
+
+            // Private channel support:
+            // url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${READ_API_KEY}&results=1`;
+
+            const res = await fetch(url, { cache: "no-store" });
+            if (!res.ok) throw new Error("ThingSpeak request failed: " + res.status);
+
+            const data = await res.json();
+            const feed = data && data.feeds && data.feeds[0];
+            if (!feed) throw new Error("No feed data returned (check channel ID / privacy / API key)");
+
+            // Map fields 1-6
+            const next = {
+                waterPercent: toNumOrNull(feed.field1),
+                waterCm: toNumOrNull(feed.field2),
+                rate: toNumOrNull(feed.field3),
+                rainADC: toNumOrNull(feed.field4),
+                humidity: toNumOrNull(feed.field5),
+                temp: toNumOrNull(feed.field6),
+                updatedAt: feed.created_at || null
+            };
+
+            console.log("ThingSpeak feed raw:", feed);
+            console.log("Mapped state:", next);
+
+            return next;
+        }
+
+        function rainLabelFromADC(adc) {
+            if (adc > 850) return "Dry";
+            if (adc > 650) return "Light";
+            if (adc > 450) return "Medium";
+            return "Heavy";
+        }
+
+        function waterStatusFromPercent(p) {
+            if (p >= 80) return { label: "DANGER", cls: "warn" };
+            if (p >= 60) return { label: "WARNING", cls: "warn" };
+            if (p >= 35) return { label: "ALERT", cls: "ok" };
+            return { label: "NORMAL", cls: "ok" };
+        }
+
+        function setBadge(el, cls) {
+            el.classList.remove("ok", "warn");
+            el.classList.add(cls);
+        }
+
+        function setWaterLevel(percent, cm, rate) {
+            const water = document.getElementById("waterBody");
+            const pctText = document.getElementById("pctText");
+            const cmText = document.getElementById("cmText");
+            const rateText = document.getElementById("rateText");
+            const badge = document.getElementById("waterBadge");
+
+            if (percent === null || cm === null || rate === null) {
+                pctText.textContent = "—";
+                cmText.textContent = "—";
+                rateText.textContent = "—";
+                water.style.height = "0%";
+                badge.textContent = "NO DATA";
+                setBadge(badge, "warn");
+                return;
+            }
+
+            percent = Math.max(0, Math.min(100, Math.round(percent)));
+            water.style.height = percent + "%";
+            pctText.textContent = percent;
+
+            cmText.textContent = Number(cm).toFixed(0);
+            rateText.textContent = (rate >= 0 ? "+" : "") + Number(rate).toFixed(1);
+
+            const st = waterStatusFromPercent(percent);
+            badge.textContent = st.label;
+            setBadge(badge, st.cls);
+        }
+
+        function setRain(adc, updatedAtIso) {
+            const rainBadge = document.getElementById("rainBadge");
+            const rainText = document.getElementById("rainText");
+            const adcText = document.getElementById("adcText");
+            const timeText = document.getElementById("timeText");
+            const rainBox = document.getElementById("rainBox");
+
+            timeText.textContent = fmtTime(updatedAtIso);
+
+            if (adc === null) {
+                rainText.textContent = "—";
+                adcText.textContent = "—";
+                rainBadge.textContent = "NO DATA";
+                setBadge(rainBadge, "warn");
+                rainBox.classList.remove("raining");
+                rainBox.classList.add("notraining");
+                return;
+            }
+
+            adc = Math.round(adc);
+            const label = rainLabelFromADC(adc);
+            const raining = label !== "Dry";
+
+            rainText.textContent = label;
+            adcText.textContent = adc;
+
+            rainBadge.textContent = raining ? "RAINING" : "NOT RAINING";
+            setBadge(rainBadge, raining ? "warn" : "ok");
+
+            rainBox.classList.toggle("raining", raining);
+            rainBox.classList.toggle("notraining", !raining);
+        }
+
+        function setHumTemp(h, t) {
+            const humEl = document.getElementById("humText");
+            const tempEl = document.getElementById("tempText");
+            const noteEl = document.getElementById("humNote");
+
+            if (h === null) {
+                humEl.textContent = "—";
+                noteEl.textContent = "No data";
+            } else {
+                humEl.textContent = Math.round(h);
+                noteEl.textContent =
+                    h >= 85 ? "Very High" :
+                        h >= 70 ? "High" :
+                            h >= 50 ? "Normal" : "Low";
+            }
+
+            if (t === null) {
+                tempEl.textContent = "—";
+            } else {
+                tempEl.textContent = Number(t).toFixed(1);
+            }
+        }
+
+        function renderAll() {
+            setWaterLevel(state.waterPercent, state.waterCm, state.rate);
+            setRain(state.rainADC, state.updatedAt);
+            setHumTemp(state.humidity, state.temp);
+        }
+
+        async function refreshFromThingSpeak() {
+            try {
+                const s = await loadStateFromThingSpeak();
+                state = { ...state, ...s };
+                renderAll();
+            } catch (err) {
+                console.warn("ThingSpeak update failed:", err);
+                // Show "NO DATA" if can't fetch at all
+                state = { ...state, waterPercent: null, waterCm: null, rate: null, rainADC: null, humidity: null, temp: null, updatedAt: null };
+                renderAll();
+            }
+        }
+
+
+        // init
+        renderAll();
+        refreshFromThingSpeak();
+        setInterval(refreshFromThingSpeak, 15000);
+    </script>
+
+</body>
+
+</html>
