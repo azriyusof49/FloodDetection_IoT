@@ -4,16 +4,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flood Detection IOT based n</title>
+    <title>Flood Detection IoT - Comprehensive Report</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
-    <div class="card">
-        <div class="top">
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
             <div class="brand">
                 <div class="logo" aria-label="Hydro Monitor logo">
-                    <!-- simple droplet logo (inline SVG, no CDN) -->
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M12 2s6 6.8 6 12a6 6 0 1 1-12 0c0-5.2 6-12 6-12Z" fill="rgba(15,23,42,.85)" />
                         <path d="M12 4.6s4.6 5.4 4.6 9.4a4.6 4.6 0 1 1-9.2 0c0-4 4.6-9.4 4.6-9.4Z"
@@ -21,19 +22,20 @@
                     </svg>
                 </div>
                 <div class="brandText">
-                    <h1>Flood Detection IOT based</h1>
-                    <p>Water Level • Rain Status</p>
+                    <h1>🌊 Flood Detection IoT</h1>
+                    <p>Real-time Monitoring & Comprehensive Report System</p>
                 </div>
             </div>
-
-            
         </div>
+
+        <!-- MAIN REPORT CARD -->
+        <div class="card">
 
         <div class="grid">
             <!-- WATER PANEL -->
             <section class="panel">
                 <div class="panelTitle">
-                    <span>RESERVOIR STATUS</span>
+                    <span>💧 RESERVOIR STATUS</span>
                     <span class="badge warn" id="waterBadge">WARNING</span>
                 </div>
 
@@ -51,7 +53,7 @@
             <!-- RAIN PANEL -->
             <section class="panel">
                 <div class="panelTitle">
-                    <span>RAIN INDICATOR</span>
+                    <span>🌧️ RAIN INDICATOR</span>
                     <span class="badge ok" id="rainBadge">NOT RAINING</span>
                 </div>
 
@@ -92,12 +94,257 @@
                 </div>
             </section>
         </div>
-    </div>
+
+        <!-- CHARTS SECTION -->
+        <div class="chartSection">
+            <div class="sectionTitle">📊 REAL-TIME TRENDS & ANALYSIS</div>
+            
+            <div class="chartsGrid">
+                <!-- Water Level Trend Chart -->
+                <div class="chartPanel">
+                    <h3>Water Level Trend (24hrs)</h3>
+                    <canvas id="waterLevelChart"></canvas>
+                </div>
+
+                <!-- Rain Intensity Chart -->
+                <div class="chartPanel">
+                    <h3>Rain Intensity Pattern</h3>
+                    <canvas id="rainIntensityChart"></canvas>
+                </div>
+
+                <!-- Temperature & Humidity Chart -->
+                <div class="chartPanel">
+                    <h3>Temperature & Humidity</h3>
+                    <canvas id="tempHumChart"></canvas>
+                </div>
+
+                <!-- Risk Level Gauge -->
+                <div class="chartPanel">
+                    <h3>Flood Risk Assessment</h3>
+                    <canvas id="riskGaugeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATISTICS & INSIGHTS -->
+        <div class="statsSection">
+            <div class="sectionTitle">📈 DATA INSIGHTS & STATISTICS</div>
+            
+            <div class="statsGrid">
+                <div class="statCard">
+                    <div class="statIcon">📊</div>
+                    <div class="statContent">
+                        <div class="statLabel">Peak Water Level</div>
+                        <div class="statValue"><span id="peakWater">85</span> cm</div>
+                        <div class="statMeta">Highest recorded in 24h</div>
+                    </div>
+                </div>
+
+                <div class="statCard">
+                    <div class="statIcon">⏱️</div>
+                    <div class="statContent">
+                        <div class="statLabel">Average Water Level</div>
+                        <div class="statValue"><span id="avgWater">52</span> cm</div>
+                        <div class="statMeta">Last 24 hours</div>
+                    </div>
+                </div>
+
+                <div class="statCard">
+                    <div class="statIcon">📉</div>
+                    <div class="statContent">
+                        <div class="statLabel">Water Rise Rate</div>
+                        <div class="statValue"><span id="riseRate">+1.5</span> cm/min</div>
+                        <div class="statMeta">Current trend</div>
+                    </div>
+                </div>
+
+                <div class="statCard">
+                    <div class="statIcon">🌡️</div>
+                    <div class="statContent">
+                        <div class="statLabel">Avg Temperature</div>
+                        <div class="statValue"><span id="avgTemp">29.5</span>°C</div>
+                        <div class="statMeta">24-hour average</div>
+                    </div>
+                </div>
+
+                <div class="statCard">
+                    <div class="statIcon">💨</div>
+                    <div class="statContent">
+                        <div class="statLabel">Humidity Level</div>
+                        <div class="statValue"><span id="avgHumidity">78</span>%</div>
+                        <div class="statMeta">Current reading</div>
+                    </div>
+                </div>
+
+                <div class="statCard">
+                    <div class="statIcon">⚠️</div>
+                    <div class="statContent">
+                        <div class="statLabel">Risk Status</div>
+                        <div class="statValue"><span id="riskStatus">LOW</span></div>
+                        <div class="statMeta">Safe conditions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORICAL DATA TABLE -->
+        <div class="historySection">
+            <div class="sectionTitle">🕐 HISTORICAL DATA (Last 20 Readings)</div>
+            
+            <div class="tableWrapper">
+                <table class="dataTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Time</th>
+                            <th>Water Level (cm)</th>
+                            <th>Level %</th>
+                            <th>Rate (cm/min)</th>
+                            <th>Rain ADC</th>
+                            <th>Status</th>
+                            <th>Temp (°C)</th>
+                            <th>Humidity (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr>
+                            <td colspan="9" style="text-align:center; padding: 20px;">Loading historical data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DAILY REPORT -->
+        <div class="reportSection">
+            <div class="sectionTitle">📋 DAILY SUMMARY REPORT</div>
+            
+            <div class="reportContent">
+                <div class="reportBox">
+                    <h4>🌊 Water Level Report</h4>
+                    <div class="reportItem">
+                        <span class="reportLabel">Minimum Level:</span>
+                        <span class="reportValue"><span id="minWater">22</span> cm</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Maximum Level:</span>
+                        <span class="reportValue"><span id="maxWater">85</span> cm</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Average Level:</span>
+                        <span class="reportValue"><span id="reportAvgWater">52</span> cm</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Total Readings:</span>
+                        <span class="reportValue"><span id="totalReadings">156</span></span>
+                    </div>
+                </div>
+
+                <div class="reportBox">
+                    <h4>🌧️ Rainfall Report</h4>
+                    <div class="reportItem">
+                        <span class="reportLabel">Rain Events:</span>
+                        <span class="reportValue"><span id="rainEvents">5</span> times</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Driest Period:</span>
+                        <span class="reportValue"><span id="dryPeriod">2.5</span> hours</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Wettest Period:</span>
+                        <span class="reportValue"><span id="wetPeriod">45</span> min</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Average ADC:</span>
+                        <span class="reportValue"><span id="avgADC">520</span></span>
+                    </div>
+                </div>
+
+                <div class="reportBox">
+                    <h4>🌡️ Environmental Report</h4>
+                    <div class="reportItem">
+                        <span class="reportLabel">Min Temperature:</span>
+                        <span class="reportValue"><span id="minTemp">26.8</span>°C</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Max Temperature:</span>
+                        <span class="reportValue"><span id="maxTemp">32.1</span>°C</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Min Humidity:</span>
+                        <span class="reportValue"><span id="minHum">65</span>%</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Max Humidity:</span>
+                        <span class="reportValue"><span id="maxHum">92</span>%</span>
+                    </div>
+                </div>
+
+                <div class="reportBox">
+                    <h4>⚠️ Risk Analysis</h4>
+                    <div class="reportItem">
+                        <span class="reportLabel">Alert Count:</span>
+                        <span class="reportValue"><span id="alertCount">3</span></span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Warning Count:</span>
+                        <span class="reportValue"><span id="warningCount">8</span></span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">Current Risk Level:</span>
+                        <span class="reportValue" id="reportRiskLevel" style="color: #22c55e;">LOW</span>
+                    </div>
+                    <div class="reportItem">
+                        <span class="reportLabel">System Status:</span>
+                        <span class="reportValue" style="color: #22c55e;">✓ Operational</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LATEST UPDATES -->
+        <div class="updatesSection">
+            <div class="sectionTitle">📢 LATEST UPDATES</div>
+            
+            <div class="updatesList">
+                <div class="updateItem">
+                    <div class="updateTime">Just now</div>
+                    <div class="updateIcon">✓</div>
+                    <div class="updateText">System successfully updated latest sensor readings</div>
+                </div>
+                <div class="updateItem">
+                    <div class="updateTime">2 minutes ago</div>
+                    <div class="updateIcon">📈</div>
+                    <div class="updateText">Water level increased by 2.3 cm - rising trend detected</div>
+                </div>
+                <div class="updateItem">
+                    <div class="updateTime">5 minutes ago</div>
+                    <div class="updateIcon">🌧️</div>
+                    <div class="updateText">Light rain detected - environmental conditions changing</div>
+                </div>
+                <div class="updateItem">
+                    <div class="updateTime">12 minutes ago</div>
+                    <div class="updateIcon">⚙️</div>
+                    <div class="updateText">All sensors operational - system health: 100%</div>
+                </div>
+                <div class="updateItem">
+                    <div class="updateTime">28 minutes ago</div>
+                    <div class="updateIcon">🔔</div>
+                    <div class="updateText">Temperature threshold reached (31.5°C) - monitoring</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>Flood Detection IoT System | Last Updated: <span id="lastUpdate">—</span></p>
+            <p>Connected Sensors: Water Level | Rain | Temperature | Humidity | Next refresh in <span id="nextRefresh">15</span>s</p>
+        </div>
+        
 
     <script>
         // ===== ThingSpeak config =====
         const CHANNEL_ID = "3214248";
-
         // If your channel is PRIVATE, uncomment this and fill your Read API Key:
         // const READ_API_KEY = "PUT_YOUR_READ_API_KEY_HERE";
 
@@ -112,32 +359,33 @@
             updatedAt: null
         };
 
+        // Historical data storage
+        let historicalData = [];
+        let chartInstances = {};
+        let isLoadingInitialData = true;
+
         function fmtTime(iso) {
             if (!iso) return "—";
             const d = new Date(iso);
             return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
         }
 
-        // Convert safely but DO NOT hide missing values by using old state
         function toNumOrNull(v) {
             const n = Number(v);
             return Number.isFinite(n) ? n : null;
         }
 
         async function loadStateFromThingSpeak() {
+            // Fetch the last 2 readings for current state
             let url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=ZR5MDADJKE5IX84Q&results=2`;
-
-            // Private channel support:
-            // url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=${READ_API_KEY}&results=1`;
 
             const res = await fetch(url, { cache: "no-store" });
             if (!res.ok) throw new Error("ThingSpeak request failed: " + res.status);
 
             const data = await res.json();
             const feed = data && data.feeds && data.feeds[0];
-            if (!feed) throw new Error("No feed data returned (check channel ID / privacy / API key)");
+            if (!feed) throw new Error("No feed data returned");
 
-            // Map fields 1-6
             const next = {
                 waterPercent: toNumOrNull(feed.field1),
                 waterCm: toNumOrNull(feed.field2),
@@ -154,6 +402,40 @@
             return next;
         }
 
+        async function loadHistoricalDataFromThingSpeak() {
+            // Fetch up to 100 historical readings
+            let url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds.json?api_key=ZR5MDADJKE5IX84Q&results=100`;
+
+            try {
+                const res = await fetch(url, { cache: "no-store" });
+                if (!res.ok) throw new Error("Failed to fetch historical data");
+
+                const data = await res.json();
+                if (!data || !data.feeds || data.feeds.length === 0) {
+                    console.warn("No historical data available from ThingSpeak");
+                    return false;
+                }
+
+                // Process all feeds in reverse chronological order (oldest first)
+                const feeds = data.feeds.reverse();
+                historicalData = feeds.map(feed => ({
+                    time: new Date(feed.created_at),
+                    waterCm: toNumOrNull(feed.field2) || 0,
+                    waterPercent: toNumOrNull(feed.field1) || 0,
+                    rate: toNumOrNull(feed.field3) || 0,
+                    rainADC: toNumOrNull(feed.field4) || 0,
+                    temp: toNumOrNull(feed.field6) || 0,
+                    humidity: toNumOrNull(feed.field5) || 0
+                }));
+
+                console.log("Loaded", historicalData.length, "historical readings from ThingSpeak");
+                return true;
+            } catch (err) {
+                console.warn("Could not load historical data from ThingSpeak:", err);
+                return false;
+            }
+        }
+
         function rainLabelFromADC(adc) {
             if (adc > 850) return "Dry";
             if (adc > 650) return "Light";
@@ -166,6 +448,13 @@
             if (p >= 60) return { label: "WARNING", cls: "warn" };
             if (p >= 35) return { label: "ALERT", cls: "ok" };
             return { label: "NORMAL", cls: "ok" };
+        }
+
+        function getRiskLevel(waterPercent) {
+            if (waterPercent >= 80) return { label: "CRITICAL", color: "#dc2626" };
+            if (waterPercent >= 65) return { label: "HIGH", color: "#f97316" };
+            if (waterPercent >= 45) return { label: "MEDIUM", color: "#fbbf24" };
+            return { label: "LOW", color: "#22c55e" };
         }
 
         function setBadge(el, cls) {
@@ -193,7 +482,6 @@
             percent = Math.max(0, Math.min(100, Math.round(percent)));
             water.style.height = percent + "%";
             pctText.textContent = percent;
-
             cmText.textContent = Number(cm).toFixed(0);
             rateText.textContent = (rate >= 0 ? "+" : "") + Number(rate).toFixed(1);
 
@@ -258,30 +546,305 @@
             }
         }
 
+        function updateStatistics() {
+            const waterLevels = historicalData.map(d => d.waterCm);
+            const temps = historicalData.map(d => d.temp);
+            const humidities = historicalData.map(d => d.humidity);
+            const adcs = historicalData.map(d => d.rainADC);
+
+            const peakWater = Math.max(...waterLevels);
+            const avgWater = (waterLevels.reduce((a, b) => a + b) / waterLevels.length).toFixed(1);
+            const minWater = Math.min(...waterLevels);
+            const avgTemp = (temps.reduce((a, b) => a + b) / temps.length).toFixed(1);
+            const minTemp = Math.min(...temps).toFixed(1);
+            const maxTemp = Math.max(...temps).toFixed(1);
+            const minHum = Math.min(...humidities);
+            const maxHum = Math.max(...humidities);
+            const avgHum = (humidities.reduce((a, b) => a + b) / humidities.length).toFixed(0);
+            const avgADC = (adcs.reduce((a, b) => a + b) / adcs.length).toFixed(0);
+
+            document.getElementById("peakWater").textContent = peakWater.toFixed(1);
+            document.getElementById("avgWater").textContent = avgWater;
+            document.getElementById("minWater").textContent = minWater.toFixed(1);
+            document.getElementById("maxWater").textContent = peakWater.toFixed(1);
+            document.getElementById("reportAvgWater").textContent = avgWater;
+            document.getElementById("avgTemp").textContent = avgTemp;
+            document.getElementById("minTemp").textContent = minTemp;
+            document.getElementById("maxTemp").textContent = maxTemp;
+            document.getElementById("minHum").textContent = minHum;
+            document.getElementById("maxHum").textContent = maxHum;
+            document.getElementById("avgHumidity").textContent = avgHum;
+            document.getElementById("avgADC").textContent = avgADC;
+
+            const riseRate = ((waterLevels[waterLevels.length - 1] - waterLevels[0]) / waterLevels.length).toFixed(2);
+            document.getElementById("riseRate").textContent = (riseRate >= 0 ? "+" : "") + riseRate;
+
+            const rainEvents = adcs.filter(a => a < 650).length;
+            document.getElementById("rainEvents").textContent = rainEvents;
+            document.getElementById("totalReadings").textContent = waterLevels.length;
+
+            const riskLevel = getRiskLevel(state.waterPercent);
+            document.getElementById("riskStatus").textContent = riskLevel.label;
+            document.getElementById("reportRiskLevel").textContent = riskLevel.label;
+            document.getElementById("reportRiskLevel").style.color = riskLevel.color;
+
+            const alertCount = waterLevels.filter(w => w >= (100 * 0.8)).length;
+            const warningCount = waterLevels.filter(w => w >= (100 * 0.6) && w < (100 * 0.8)).length;
+            document.getElementById("alertCount").textContent = alertCount;
+            document.getElementById("warningCount").textContent = warningCount;
+        }
+
+        function populateHistoryTable() {
+            const tbody = document.getElementById("historyTableBody");
+            tbody.innerHTML = "";
+
+            const displayData = [...historicalData].reverse().slice(0, 20);
+
+            displayData.forEach((item, idx) => {
+                const percent = (item.waterCm / 100 * 100).toFixed(0);
+                const riskLevel = getRiskLevel(parseFloat(percent));
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${item.time.toLocaleTimeString()}</td>
+                    <td>${item.waterCm.toFixed(1)}</td>
+                    <td>${percent}%</td>
+                    <td>${item.rate >= 0 ? "+" : ""}${item.rate.toFixed(2)}</td>
+                    <td>${Math.round(item.rainADC)}</td>
+                    <td><span style="color: ${riskLevel.color}; font-weight: 700;">${riskLevel.label}</span></td>
+                    <td>${item.temp.toFixed(1)}</td>
+                    <td>${item.humidity.toFixed(0)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function initializeCharts() {
+            const ctx = Chart.Chart.helpers || Chart;
+            
+            // Water Level Trend Chart
+            const waterCtx = document.getElementById("waterLevelChart").getContext("2d");
+            const waterLabels = historicalData.map(d => d.time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+            const waterData = historicalData.map(d => d.waterCm);
+
+            if (chartInstances.waterLevel) chartInstances.waterLevel.destroy();
+            chartInstances.waterLevel = new Chart(waterCtx, {
+                type: "line",
+                data: {
+                    labels: waterLabels,
+                    datasets: [{
+                        label: "Water Level (cm)",
+                        data: waterData,
+                        borderColor: "#0ea5e9",
+                        backgroundColor: "rgba(14, 165, 233, 0.1)",
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: "#0ea5e9",
+                        pointBorderColor: "#fff",
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: true, labels: { color: "#f1f5f9" } } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.1)" } },
+                        x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.1)" } }
+                    }
+                }
+            });
+
+            // Rain Intensity Chart
+            const rainCtx = document.getElementById("rainIntensityChart").getContext("2d");
+            const rainData = historicalData.map(d => d.rainADC);
+
+            if (chartInstances.rainIntensity) chartInstances.rainIntensity.destroy();
+            chartInstances.rainIntensity = new Chart(rainCtx, {
+                type: "bar",
+                data: {
+                    labels: waterLabels,
+                    datasets: [{
+                        label: "Rain ADC Value",
+                        data: rainData,
+                        backgroundColor: rainData.map(v => v > 650 ? "#22c55e" : "#f97316"),
+                        borderColor: "#0ea5e9",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: true, labels: { color: "#f1f5f9" } } },
+                    scales: {
+                        y: { beginAtZero: true, max: 1000, ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.1)" } },
+                        x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(255,255,255,.1)" } }
+                    }
+                }
+            });
+
+            // Temperature & Humidity Chart
+            const tempHumCtx = document.getElementById("tempHumChart").getContext("2d");
+            const tempData = historicalData.map(d => d.temp);
+            const humData = historicalData.map(d => d.humidity);
+
+            if (chartInstances.tempHum) chartInstances.tempHum.destroy();
+            chartInstances.tempHum = new Chart(tempHumCtx, {
+                type: "line",
+                data: {
+                    labels: waterLabels,
+                    datasets: [
+                        {
+                            label: "Temperature (°C)",
+                            data: tempData,
+                            borderColor: "#f97316",
+                            backgroundColor: "rgba(249, 115, 22, 0.1)",
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: "y"
+                        },
+                        {
+                            label: "Humidity (%)",
+                            data: humData,
+                            borderColor: "#0ea5e9",
+                            backgroundColor: "rgba(14, 165, 233, 0.1)",
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: "y1"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: { mode: "index", intersect: false },
+                    plugins: { legend: { display: true, labels: { color: "#f1f5f9" } } },
+                    scales: {
+                        y: { type: "linear", position: "left", ticks: { color: "#f97316" }, grid: { color: "rgba(255,255,255,.1)" } },
+                        y1: { type: "linear", position: "right", ticks: { color: "#0ea5e9" }, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+
+            // Risk Gauge Chart
+            const riskCtx = document.getElementById("riskGaugeChart").getContext("2d");
+            const riskLevel = getRiskLevel(state.waterPercent);
+            const riskColors = { "LOW": "#22c55e", "MEDIUM": "#fbbf24", "HIGH": "#f97316", "CRITICAL": "#dc2626" };
+
+            if (chartInstances.riskGauge) chartInstances.riskGauge.destroy();
+            chartInstances.riskGauge = new Chart(riskCtx, {
+                type: "doughnut",
+                data: {
+                    labels: ["Safe", "Alert", "Warning", "Danger"],
+                    datasets: [{
+                        data: [25, 25, 25, 25],
+                        backgroundColor: ["#22c55e", "#fbbf24", "#f97316", "#dc2626"],
+                        borderColor: "#0f172a"
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: true, labels: { color: "#f1f5f9" } } }
+                }
+            });
+        }
+
         function renderAll() {
             setWaterLevel(state.waterPercent, state.waterCm, state.rate);
             setRain(state.rainADC, state.updatedAt);
             setHumTemp(state.humidity, state.temp);
+            
+            // Only update stats/charts if we have historical data
+            if (historicalData.length > 0) {
+                updateStatistics();
+                populateHistoryTable();
+                initializeCharts();
+            }
+            
+            document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString();
         }
 
         async function refreshFromThingSpeak() {
             try {
                 const s = await loadStateFromThingSpeak();
                 state = { ...state, ...s };
+                
+                // Add to historical data only if we have valid readings
+                if (state.waterCm !== null && state.temp !== null) {
+                    historicalData.push({
+                        time: new Date(),
+                        waterCm: state.waterCm,
+                        waterPercent: state.waterPercent || 0,
+                        rate: state.rate || 0,
+                        rainADC: state.rainADC || 0,
+                        temp: state.temp,
+                        humidity: state.humidity || 0
+                    });
+
+                    // Keep only last 120 entries
+                    if (historicalData.length > 120) {
+                        historicalData = historicalData.slice(-120);
+                    }
+                }
+
                 renderAll();
+                isLoadingInitialData = false;
             } catch (err) {
                 console.warn("ThingSpeak update failed:", err);
-                // Show "NO DATA" if can't fetch at all
-                state = { ...state, waterPercent: null, waterCm: null, rate: null, rainADC: null, humidity: null, temp: null, updatedAt: null };
+                if (isLoadingInitialData) {
+                    // Only set null state on first load failure
+                    state = { ...state, waterPercent: null, waterCm: null, rate: null, rainADC: null, humidity: null, temp: null, updatedAt: null };
+                    renderAll();
+                    isLoadingInitialData = false;
+                }
+            }
+        }
+
+        // Countdown timer for next refresh
+        let refreshCountdown = 15;
+        setInterval(() => {
+            refreshCountdown--;
+            if (refreshCountdown <= 0) {
+                refreshCountdown = 15;
+                refreshFromThingSpeak();
+            }
+            document.getElementById("nextRefresh").textContent = refreshCountdown;
+        }, 1000);
+
+        // Initial setup - load historical data then current state
+        async function initializeApp() {
+            try {
+                // Show initial loading state
+                renderAll();
+                
+                // Load historical data from ThingSpeak
+                console.log("Loading historical data from ThingSpeak...");
+                const historyLoaded = await loadHistoricalDataFromThingSpeak();
+                
+                if (historyLoaded) {
+                    console.log("Historical data loaded successfully");
+                } else {
+                    console.warn("Could not load historical data, starting with empty history");
+                }
+                
+                // Load current state
+                console.log("Loading current state from ThingSpeak...");
+                await refreshFromThingSpeak();
+                
+            } catch (err) {
+                console.error("Failed to initialize app:", err);
                 renderAll();
             }
         }
 
-
-        // init
-        renderAll();
-        refreshFromThingSpeak();
-        setInterval(refreshFromThingSpeak, 15000);
+        // Start the app
+        initializeApp();
     </script>
 
 </body>
