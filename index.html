@@ -307,30 +307,10 @@
             <div class="sectionTitle">📢 LATEST UPDATES</div>
             
             <div class="updatesList">
-                <div class="updateItem">
-                    <div class="updateTime">Just now</div>
-                    <div class="updateIcon">✓</div>
-                    <div class="updateText">System successfully updated latest sensor readings</div>
-                </div>
-                <div class="updateItem">
-                    <div class="updateTime">2 minutes ago</div>
-                    <div class="updateIcon">📈</div>
-                    <div class="updateText">Water level increased by 2.3 cm - rising trend detected</div>
-                </div>
-                <div class="updateItem">
-                    <div class="updateTime">5 minutes ago</div>
-                    <div class="updateIcon">🌧️</div>
-                    <div class="updateText">Light rain detected - environmental conditions changing</div>
-                </div>
-                <div class="updateItem">
-                    <div class="updateTime">12 minutes ago</div>
-                    <div class="updateIcon">⚙️</div>
-                    <div class="updateText">All sensors operational - system health: 100%</div>
-                </div>
-                <div class="updateItem">
-                    <div class="updateTime">28 minutes ago</div>
-                    <div class="updateIcon">🔔</div>
-                    <div class="updateText">Temperature threshold reached (31.5°C) - monitoring</div>
+                <div class="updateItem" style="opacity: 0.6;">
+                    <div class="updateTime">—</div>
+                    <div class="updateIcon">⏳</div>
+                    <div class="updateText">Waiting for data updates...</div>
                 </div>
             </div>
         </div>
@@ -363,6 +343,14 @@
         let historicalData = [];
         let chartInstances = {};
         let isLoadingInitialData = true;
+        let updatesList = [];
+        let previousState = {
+            waterPercent: null,
+            rainStatus: null,
+            tempHigh: false,
+            riskLevel: null,
+            isRaining: false
+        };
 
         function fmtTime(iso) {
             if (!iso) return "—";
@@ -455,6 +443,129 @@
             if (waterPercent >= 65) return { label: "HIGH", color: "#f97316" };
             if (waterPercent >= 45) return { label: "MEDIUM", color: "#fbbf24" };
             return { label: "LOW", color: "#22c55e" };
+        }
+
+        function addUpdate(message, icon, urgency = "info") {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+            
+            updatesList.unshift({
+                time: timeStr,
+                message: message,
+                icon: icon,
+                urgency: urgency,
+                timestamp: now
+            });
+
+            // Keep only last 10 updates
+            if (updatesList.length > 10) {
+                updatesList = updatesList.slice(0, 10);
+            }
+
+            // Update the UI
+            populateUpdates();
+        }
+
+        function populateUpdates() {
+            const updatesList_el = document.querySelector(".updatesList");
+            if (!updatesList_el) return;
+
+            updatesList_el.innerHTML = "";
+
+            if (updatesList.length === 0) {
+                updatesList_el.innerHTML = `
+                    <div class="updateItem" style="opacity: 0.6;">
+                        <div class="updateTime">—</div>
+                        <div class="updateIcon">⏳</div>
+                        <div class="updateText">Waiting for data updates...</div>
+                    </div>
+                `;
+                return;
+            }
+
+            updatesList.forEach(update => {
+                const updateEl = document.createElement("div");
+                updateEl.className = "updateItem";
+                if (update.urgency === "critical") {
+                    updateEl.style.borderColor = "rgba(220, 38, 38, 0.5)";
+                    updateEl.style.background = "rgba(220, 38, 38, 0.08)";
+                }
+                updateEl.innerHTML = `
+                    <div class="updateTime">${update.time}</div>
+                    <div class="updateIcon">${update.icon}</div>
+                    <div class="updateText">${update.message}</div>
+                `;
+                updatesList_el.appendChild(updateEl);
+            });
+        }
+
+        function detectAndAddUpdates() {
+            const currentRiskLevel = getRiskLevel(state.waterPercent);
+            const isCurrentlyRaining = state.rainADC < 650;
+            const isTempHigh = state.temp > 31;
+
+            // Water level changes
+            if (previousState.waterPercent !== null && state.waterPercent !== null) {
+                const change = state.waterPercent - previousState.waterPercent;
+                
+                if (change > 5) {
+                    addUpdate(`Water level jumped +${change.toFixed(0)}% - rapid increase detected`, "📈", "warning");
+                } else if (change > 2) {
+                    addUpdate(`Water level increased to ${state.waterPercent}%`, "📊", "info");
+                } else if (change < -5) {
+                    addUpdate(`Water level dropped ${Math.abs(change).toFixed(0)}% - drainage detected`, "📉", "info");
+                }
+            }
+
+            // Risk level changes
+            if (previousState.riskLevel !== null && previousState.riskLevel !== currentRiskLevel.label) {
+                const severity = currentRiskLevel.label === "CRITICAL" ? "critical" : "info";
+                addUpdate(`Risk level changed to ${currentRiskLevel.label}`, "⚠️", severity);
+            }
+
+            // Rain detection changes
+            if (previousState.isRaining !== null && previousState.isRaining !== isCurrentlyRaining) {
+                if (isCurrentlyRaining) {
+                    const rainIntensity = state.rainADC > 650 ? "Light" : state.rainADC > 450 ? "Medium" : "Heavy";
+                    addUpdate(`${rainIntensity} rain detected - environmental conditions changing`, "🌧️", "info");
+                } else {
+                    addUpdate(`Rain stopped - atmospheric conditions improving`, "☀️", "info");
+                }
+            }
+
+            // Temperature threshold
+            if (previousState.tempHigh !== null && previousState.tempHigh !== isTempHigh) {
+                if (isTempHigh) {
+                    addUpdate(`Temperature threshold exceeded: ${state.temp.toFixed(1)}°C - monitoring`, "🌡️", "warning");
+                } else {
+                    addUpdate(`Temperature normalized: ${state.temp.toFixed(1)}°C`, "❄️", "info");
+                }
+            }
+
+            // Water level reaching critical thresholds
+            if (state.waterPercent !== null && previousState.waterPercent !== null) {
+                if (state.waterPercent >= 80 && previousState.waterPercent < 80) {
+                    addUpdate("⚠️ CRITICAL: Water level reached DANGER zone (80%+)", "🚨", "critical");
+                } else if (state.waterPercent >= 65 && previousState.waterPercent < 65) {
+                    addUpdate("WARNING: Water level in high zone (65%+)", "⚠️", "warning");
+                } else if (state.waterPercent >= 45 && previousState.waterPercent < 45) {
+                    addUpdate("ALERT: Water level at moderate level (45%+)", "🔔", "info");
+                }
+            }
+
+            // System data sync
+            if (state.waterCm !== null && previousState.waterPercent === null) {
+                addUpdate("System successfully synced latest sensor readings", "✓", "info");
+            }
+
+            // Update previous state
+            previousState = {
+                waterPercent: state.waterPercent,
+                rainStatus: isCurrentlyRaining ? "Raining" : "Dry",
+                tempHigh: isTempHigh,
+                riskLevel: currentRiskLevel.label,
+                isRaining: isCurrentlyRaining
+            };
         }
 
         function setBadge(el, cls) {
@@ -791,6 +902,9 @@
                     if (historicalData.length > 120) {
                         historicalData = historicalData.slice(-120);
                     }
+
+                    // Detect changes and generate updates
+                    detectAndAddUpdates();
                 }
 
                 renderAll();
@@ -837,9 +951,13 @@
                 console.log("Loading current state from ThingSpeak...");
                 await refreshFromThingSpeak();
                 
+                // Populate updates section
+                populateUpdates();
+                
             } catch (err) {
                 console.error("Failed to initialize app:", err);
                 renderAll();
+                populateUpdates();
             }
         }
 
