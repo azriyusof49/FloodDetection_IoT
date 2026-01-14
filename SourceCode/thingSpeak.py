@@ -1,10 +1,10 @@
 import urequests
 import ujson
-THINGSPEAK_WRITE_API_KEY = "AD784F72G9TC1OQ1"  # Replace with your API key
+THINGSPEAK_WRITE_API_KEY = "API_KEY"  # Replace with your API key
 
 # LED Control Channel Configuration (NEW)
-THINGSPEAK_CHANNEL_ID = "3214248"    # Replace with LED control channel ID
-THINGSPEAK_READ_API_KEY = "ZR5MDADJKE5IX84Q" 
+THINGSPEAK_CHANNEL_ID = "CHANNEL_ID"    # Replace channel ID
+THINGSPEAK_READ_API_KEY = "API_KEY" 
 
 # ThingSpeak API URL
 API_URL = "http://api.thingspeak.com"
@@ -22,4 +22,5 @@ def write_thingspeak_data(waterPercent, waterCm, rate, RainADC, humidity, temper
         response.close()
     except Exception as e:
         print("Error sending data to ThingSpeak:", e)
+
 
