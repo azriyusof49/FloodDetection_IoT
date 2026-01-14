@@ -1,4 +1,4 @@
-# FloodDetection_IoT
+# FloodDetection IoT
 
 **Project Overview**
 This project is a simple IoT flood detection system using a Raspberry Pi Pico W. It includes a web dashboard, microcontroller code (for Pico W), and server/backend scripts if needed. The repository contains the dashboard (`index.html`, `styles.css`) and a `SourceCode` folder with the Pico W scripts.
